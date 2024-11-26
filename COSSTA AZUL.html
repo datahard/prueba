@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Interactivo</title>
+    <style>
+        circle {
+            transition: fill 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plano Interactivo</h1>
+    <object id="plano" type="image/svg+xml" data="COSSTA AZUL.svg"></object>
+
+    <script>
+        async function updateColors() {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbyRZTBW-KfqTVAOVi81mLDh00z5JZWSWx1VhODMKcTB28Pffunco40oPY5PlPrJdQ/exec'); // URL del Apps Script
+            const data = await response.json();
+
+            const svgDoc = document.getElementById('plano').contentDocument;
+            data.forEach(lote => {
+                const circle = svgDoc.getElementById(lote.Lote); // Lote debe coincidir con el ID en el SVG
+                if (circle) {
+                    switch (lote.Estado.toLowerCase()) {
+                        case "libre":
+                            circle.setAttribute("fill", "yellow");
+                            break;
+                        case "separado":
+                            circle.setAttribute("fill", "red");
+                            break;
+                        case "bloqueado":
+                            circle.setAttribute("fill", "rgba(128,128,128,0.5)");
+                            break;
+                        case "vendido":
+                            circle.setAttribute("fill", "green");
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Actualizar colores cada 10 segundos
+        setInterval(updateColors, 10000);
+        updateColors();
+    </script>
+</body>
+</html>
